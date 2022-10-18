@@ -186,6 +186,7 @@
 
 // load next load previous
 let currentPage = 1;
+let totalPages;
 function getUsersAjax(page) {
   fetch("https://reqres.in/api/users?page=" + page, {
     method: "GET",
@@ -201,11 +202,18 @@ function getUsersAjax(page) {
 
       responseData.data.forEach((element) => {
         let li = document.createElement("li");
-        li.textContent = `${element.first_name} ${element.last_name}`;
+        let p = document.createElement("p");
+
+        p.textContent = `${element.first_name} ${element.last_name}`;
+        let image = document.createElement("img");
+        image.src = element.avatar;
+        li.appendChild(image);
+        li.appendChild(p);
         fragment.appendChild(li);
       });
       document.getElementById("list").innerHTML = " ";
       document.getElementById("list").appendChild(fragment);
+      totalPages = responseData.total_pages;
     })
     .catch(function (error) {
       if (error == 404) {
@@ -222,16 +230,18 @@ function getUsersAjax(page) {
     });
 }
 document.getElementById("loadprev").addEventListener("click", function () {
+  if (currentPage == 1) {
+    return;
+  }
   currentPage -= 1;
   getUsersAjax(currentPage);
 });
 document.getElementById("loadnext").addEventListener("click", function () {
+  if (currentPage == totalPages) {
+    return;
+  }
   currentPage += 1;
   getUsersAjax(currentPage);
 });
 
-// document.getElementById("loadmore").addEventListener("click", function () {
-//   currentPage += 1;
-//   getUsersAjax(currentPage);
-// });
 getUsersAjax(currentPage);
